@@ -67,8 +67,8 @@ def publish(client):
         else:
             print(f"Failed to send message to topic {topic}")
         msg_count += 1
-        # if msg_count > 5:
-        #     break
+        if msg_count > 5:
+            break
 
 def run():
     client = connect_mqtt()
