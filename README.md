@@ -1,4 +1,4 @@
-# emqx-kafka-mongo-messaging-app
+# EMQX KAFKA AND MONGO MESSAGE PROCESSING APPLICATION
 The purpose this document is to use kafka for processing large amounts of data efficiently from IOT devices. But the challenge is, kafka was not designed for IOT devices. Hence integration of EMQX which uses mqtt lightweight protocol in conjunction with kafka can elevate wide range of opportunites to process the data in real-time.
 
 Time sensitive application can largely benifit from this stack.
