@@ -200,6 +200,8 @@ when you login for the first time, it will prompt you to reset the password. Onc
 
     ![emqx execution](images/emqx/execution-emqx.png)
 
+                    *** End of EMQX setup ***
+
 ## Setting up KAFKA (Assuming on Ubuntu platform)
 
 The below diagram shows a high level overview of what Kafka is for beginners. (there's lot more to Kafka, like Zookeeper, Consumer Groups, Partitions, etc. but we'll leave that for another time.)
@@ -427,11 +429,61 @@ So far, we have seen how to setup kafka and processing message via command line 
 ### Step 6: Kafka producer python module
 
 ```
+import json
+from logging import log
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
 
+# produce json messages
+# configure multiple retries
+# produce asynchronously with callbacks
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+                         retries=5,
+                         value_serializer=lambda m: json.dumps(m).encode('ascii'))
+
+def on_send_success(record_metadata):
+    print("%s:%d:%d" % (record_metadata.topic, 
+                                 record_metadata.partition,
+                                 record_metadata.offset))
+
+def on_send_error(excp):
+    log.error('I am an errback', exc_info=excp)
+    # handle exception
+
+for item in range(10):
+    producer.send('emqx-to-kafka', {item: 'awesome-' + str(item**2)}).add_callback(on_send_success).add_errback(on_send_error)
+
+# block until all async messages are sent
+producer.flush()
 ```
 
 ### Step 7: Kafka consumer python module
 
 ```
+import json
+from kafka import KafkaConsumer
 
+# To consume latest messages and auto-commit offsets
+# consume json messages
+# StopIteration if no message after 1sec
+# auto_offset_reset='earliest', enable_auto_commit=False
+consumer = KafkaConsumer(bootstrap_servers='localhost:9092',
+                         auto_offset_reset='latest', 
+                         enable_auto_commit=True,
+                         consumer_timeout_ms=1000,
+                         value_deserializer=lambda m: json.loads(m.decode('ascii')))
+
+# Subscribe to a regex topic pattern
+consumer.subscribe(pattern='^emqx.*')
+
+while True:
+    for message in consumer:
+        # message value and key are raw bytes -- decode if necessary!
+        # e.g., for unicode: `message.value.decode('utf-8')`
+        print ("%s:%d:%d: data=%s" % (message.topic, message.partition,
+                                            message.offset, message.value))
 ```
+![kafka producer and consumer run](images/kafka/kafka-exec.png)
+
+                    *** End of Kafka setup ***
+
