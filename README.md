@@ -200,7 +200,7 @@ when you login for the first time, it will prompt you to reset the password. Onc
 
     ![emqx execution](images/emqx/execution-emqx.png)
 
-                    *** End of EMQX setup ***
+<h3 style="text-align: center;">*** End of EMQX setup ***</h3>
 
 ## Setting up KAFKA (Assuming on Ubuntu platform)
 
@@ -485,5 +485,4 @@ while True:
 ```
 ![kafka producer and consumer run](images/kafka/kafka-exec.png)
 
-<b><p style="text-align: center;">*** End of Kafka setup ***</p></b>
-
+<h3 style="text-align: center;">*** End of Kafka setup ***</h3>
