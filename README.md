@@ -1,7 +1,5 @@
 # EMQX KAFKA AND MONGO MESSAGE PROCESSING APPLICATION
-The purpose this document is to use kafka for processing large amounts of data efficiently from IOT devices. But the challenge is, kafka was not designed for IOT devices. Hence integration of EMQX which uses mqtt lightweight protocol in conjunction with kafka can elevate wide range of opportunites to process the data in real-time.
-
-Time sensitive application can largely benifit from this stack.
+The goal of this document is to use Kafka to process massive amounts of data from Internet of Things (IOT) devices in an efficient manner. However, since Kafka was not intended for IOT devices, the integration of EMQX—which uses the MQTT lightweight protocol—with Kafka can elevate a variety of opportunities to process the data in real-time, greatly benefiting time-sensitive applications.
 
 ## Introduction
 ### EMQX
@@ -12,24 +10,24 @@ EMQX supports various protocols, including MQTT (3.1, 3.1.1, and 5.0), HTTP, QUI
 ### KAFKA
 Apache Kafka is a widely used open-source distributed event streaming platform that can handle the real-time transfer of data streams between applications and systems. However, Kafka is not built for edge IoT communication and Kafka clients require a stable network connection and more hardware resources. In the IoT realm, data generated from devices and applications are transmitted using the lightweight MQTT protocol. EMQX’s integration with Kafka/Confluent enables users to stream MQTT data seamlessly into or from Kafka. MQTT data streams are ingested into Kafka topics, ensuring real-time processing, storage, and analytics. Conversely, Kafka topics data can be consumed by MQTT devices, enabling timely actions.
 
-In this article we are going to achieve the below architecture.
+We will accomplish the following architecture in this tutorial.
 
 ![emqx-kafka](images/emqx-kafka.jpg)
 
 ## Setting up EMQX
 ### Step 1: Running EMQX service
-Docker is very handy tool when we want to setup the emqx server on the local machine. It can eliminate lot of choas and lets to run the emqx server setup with just 2 command like below,
+When setting up the emqx server locally, Docker is a really helpful tool. It can remove a lot of steps and allow us to run the emqx server configuration with just two commands, as shown below.
 
 ```docker
 docker pull emqx/emqx
 docker run -d --name emqx -p 1883:1883 -p 8083:8083 -p 8084:8084 -p 8883:8883 -p 18083:18083 emqx/emqx
 ```
 
-We can also use docker desktop in the windows machine to pull and run the emqx docker image.
+We can also pull and execute the emqx docker image on the Windows computer by using docker desktop.
 
 ![emqx-windows-docker](images/emqx/emqx-windows.png)
 
-Once you run the docker image, you should be able to see the logs that contains the details about ports on which emqx services are running. In EMQX, listener is configured to receive requests from MQTT clients. EMQX supports the following message transfer protocols, including:
+EMQX supports the following message transmission protocols, and once you run the docker image, you should be able to see the logs that contain the details about the ports on which emqx services are running. The listener in EMQX is set up to receive requests from MQTT clients.
 
     - TCP: port 1883
     - SSL: port 8883
