@@ -485,5 +485,5 @@ while True:
 ```
 ![kafka producer and consumer run](images/kafka/kafka-exec.png)
 
-                    *** End of Kafka setup ***
+<b><p style="text-align: center;">*** End of Kafka setup ***</p></b>
 
