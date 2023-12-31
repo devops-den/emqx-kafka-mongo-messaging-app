@@ -486,3 +486,96 @@ while True:
 ![kafka producer and consumer run](images/kafka/kafka-exec.png)
 
 <h3 style="text-align: center;"> *** End of Kafka setup *** </h3>
+
+## EMQX + KAFKA together
+
+So far, we have learned how EMQX and Kafka works individually. Now its time to club together to yeild better results.
+All we need to do here is, merging EMQX subscriber logic and Kafka producer logic together.
+
+After merging both the logics, it will look like below,
+
+```
+import random
+import json
+from logging import log
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
+from paho.mqtt import client as mqtt_client
+
+# Create an MQTT Connection
+broker      = '192.168.48.1'
+port        = 1883
+topic       = "python/mqtt"
+client_id   = f'subscribe-{random.randint(0, 1000)}'
+username    = "admin"
+password    = "public"
+
+# produce json messages
+# configure multiple retries
+# produce asynchronously with callbacks
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+                         retries=5,
+                         value_serializer=lambda m: json.dumps(m).encode('ascii'))
+
+def connect_mqtt() -> mqtt_client:
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            print("Connected to MQTT Broker!")
+        else:
+            print("Failed to connect, return code %d\n", rc)
+
+    client = mqtt_client.Client(client_id)
+    client.username_pw_set(username, password)
+    client.on_connect = on_connect
+    client.connect(broker, port)
+    return client
+
+def subscribe(client: mqtt_client):
+    def on_message(client, userdata, msg):
+        print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+        producer.send('emqx-to-kafka', {"data": msg.payload.decode()}).add_callback(on_send_success).add_errback(on_send_error)
+        # block until all async messages are sent
+        producer.flush()
+
+    client.subscribe(topic)
+    client.on_message = on_message
+
+def run():
+    client = connect_mqtt()
+    subscribe(client)
+    client.loop_forever()
+
+def on_send_success(record_metadata):
+    print("%s:%d:%d" % (record_metadata.topic, 
+                                 record_metadata.partition,
+                                 record_metadata.offset))
+
+def on_send_error(excp):
+    log.error('I am an errback', exc_info=excp)
+    # handle exception
+
+if __name__ == "__main__":
+    run()
+```
+
+The main fundamental change in the existing EMQX subscriber logic would be, along with printing the message in subcribe function, now we are sending that messsage into kafka producer like below.
+
+```
+def subscribe(client: mqtt_client):
+    def on_message(client, userdata, msg):
+        print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+        producer.send('emqx-to-kafka', {"data": msg.payload.decode()}).add_callback(on_send_success).add_errback(on_send_error)
+        # block until all async messages are sent
+        producer.flush()
+```
+
+The end result would be when emqx publisher send a message, kafka consumer will receive it.
+
+![emqx and kafka merge](images/kafka/emqx-kafka-together.png)
+
+So, in a real time scenario, the emqx publisher logic will go into IOT devices where those devices periodically send some messages by capturing real time data and kafka consumer will process that data at the end and finally we can process and store the data in backend database.
+
+In the next section, we will explore storing the messages from kafka consumer into mango db.
+
+## Processing and storing real time data into mongodb
+
