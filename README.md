@@ -48,14 +48,14 @@ Login into the dashboard using default credentials.
 username: admin
 password: public
 ```
-when you login for the first time, it will prompt you to reset the password. Once we reset the password, it will redirect you to dashboard of emqx.
+Upon logging in for the first time, you will be prompted to reset your password, which will then take you to the emqx dashboard.
 
 ![dashboard](images/emqx/dashboard.png)
 
 ### Step 2: Create emqx publisher/subscriber files using python programming
 
 - #### Step 1: using paho-mqtt python module
-    This article mainly introduces how to use the paho-mqtt client and implement connection, subscribe, messaging, and other functions between the MQTT client and MQTT broker, in the Python project.
+    This article primarily explains how to use the paho-mqtt client and construct message, connection, and subscription functions in Python between the MQTT client and MQTT broker.
 
 - #### Step 2: Install the Paho Mqtt Client
     `pip3 install paho-mqtt`
@@ -186,7 +186,7 @@ when you login for the first time, it will prompt you to reset the password. Onc
         run()
     ```
 
-    > **_NOTE:_** These both the files are very basic. The publisher will send 5 message and then will stop. The subscriber will go into infinite loop for receiving messages from publisher. Feel free to tweak publisher logic to continuosly send the messages by removing below block in it.
+    > **_NOTE:_** These two files are quite basic; the publisher will send five messages before stopping, and the subscriber will be in an endless loop of receiving messages from the publisher. You can modify the publisher logic to transmit messages continuously by deleting the block below.
     ```
     msg_count += 1
         if msg_count > 5:
@@ -194,7 +194,7 @@ when you login for the first time, it will prompt you to reset the password. Onc
     ```
 
 - #### Step 5: Execute the subscriber and Publisher
-    Execute subscriber program in one terminal session and then run the publisher program in another session. you should be able to see something like below,
+    Run the publisher program in a separate terminal session after completing the subscriber program in the first one. The result should look somewhat like this:
 
     ![emqx execution](images/emqx/execution-emqx.png)
 
@@ -202,20 +202,14 @@ when you login for the first time, it will prompt you to reset the password. Onc
 
 ## Setting up KAFKA (Assuming on Ubuntu platform)
 
-The below diagram shows a high level overview of what Kafka is for beginners. (there's lot more to Kafka, like Zookeeper, Consumer Groups, Partitions, etc. but we'll leave that for another time.)
+For those who are unfamiliar with Kafka, the diagram below provides a high-level explanation of the concept. (there is lot more to Kafka, such Zookeeper, Consumer Groups, Partitions, etc., but we will leave it for another time.)
 
 ![kafka setup](images/kafka/kafka-setup.png)
 
-Kafka categorizes data into topics. A topic is a category or feed name to which records are published.
-
-
-Producers publish messages to a specific topic. The messages can be in any format, with JSON and Avro being popular options. For example, a social media platform might use a producer to publish messages to a topic called posts whenever a user creates a post.
-
-
-Consumers subscribe to a topic to consume the records published by producers. In the social media example, there might be a consumer set up to consume the posts topic to perform safety checks on the post before it is published to the global feed, and another consumer may asynchronously send notifications to the user's followers.
+Kafka divides data into topics, which are categories or feed names to which records are published. Producers publish messages to a particular topic. These messages can take any format; popular formats are JSON and Avro. For instance, on a social media platform, a producer may publish messages to a topic called posts each time a user creates a post. Consumers subscribe to a topic in order to consume the records published by producers. In the example given for the social media platform, there may be a consumer set up to consume the posts topic in order to verify the post's safety before it is published to the global feed, and another consumer may asynchronously send notifications to the user's followers.
 
 ### Step 1: Installing Java
-Apache Kafka can be run on all platforms supported by Java. In order to set up Kafka on the ubuntu system, you need to install java first. As we know, Oracle java is now commercially available, So we are using its open-source version OpenJDK.
+Since Oracle Java is now commercially accessible, we are using its open-source version OpenJDK. Apache Kafka can be operated on any platform that supports Java. To install Kafka on an Ubuntu server, follow these steps.
 
 ```
 sudo apt update 
@@ -240,9 +234,9 @@ sudo mv kafka_2.13-3.6.1 /usr/local/kafka
 ```
 
 ### Step 3: Running Kafka service.
-Now we have 2 ways to run the kafka service. One way would be navigating to /usr/local/kafka/bin and run the kafka script everytime. Second way is, running it as a unix service. We will go with running it as a service.
+Now that we have two options for starting the Kafka service, we can choose to run it as a unix service. Alternatively, we can navigate to /usr/local/kafka/bin and run the Kafka script each time.
     
-> **_NOTE:_** Apache Kafka can be started using ZooKeeper or KRaft. To get started with either configuration follow one the sections below but not both
+> **_NOTE:_** ZooKeeper or KRaft can be used to start Apache Kafka; in this post, we will use ZooKeeper Flow rather of both.
     
 - #### Step 1 - Creating System Unit Files
     ```
@@ -301,13 +295,13 @@ Now we have 2 ways to run the kafka service. One way would be navigating to /usr
     ```
 
 - #### Step 2 - Start Kafka and Zookeeper Service
-    First, you need to start the ZooKeeper service and then start Kafka. Use the systemctl command to start a single-node ZooKeeper instance.
+    To start Kafka, you must first start the ZooKeeper service. To start a single-node ZooKeeper instance, use the systemctl command.
 
     ```
     sudo systemctl start zookeeper
     ```
 
-    Now start the Kafka server and view the running status:
+    Launch the Kafka server now to see the current status:
 
     ```
     sudo systemctl start kafka
@@ -338,10 +332,10 @@ Now we have 2 ways to run the kafka service. One way would be navigating to /usr
     Dec 12 13:41:17 LAPTOP-JF1PIDLR kafka-server-start.sh[50201]: [2023-12-12 13:41:17,861] INFO [zk-broker-0-to-controller-alter-partition-channel-manager]: Recorded new controller, from now on will use node LAPTOP-JF1PIDLR.:9
     ```
 
-    All done. The Kafka installation has been successfully completed. The part of this tutorial will help you to work with the Kafka server.
+    This completes the installation of Kafka. The next section of the tutorial will assist you in interacting with the Kafka server.
 
 ### Step 4: Create a Topic in Kafka
-Kafka provides multiple pre-built shell scripts to work on it. First, create a topic named “emqx-to-kafka” with a single partition with a single replica:
+To begin working with Kafka, create a topic called "emqx-to-kafka" with a single partition and a single replica. Kafka provides several pre-built shell scripts for this purpose.
 
 ```
 cd /usr/local/kafka
@@ -350,9 +344,7 @@ bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-fac
 Created topic emqx-to-kafka.
 ```
 
-The replication factor describes how many copies of data will be created. As we are running with a single instance keep this value 1. Set the partition options as the number of brokers you want your data to be split between. As we are running with a single broker keep this value 1. You can create multiple topics by running the same command as above.
-
-After that, you can see the created topics on Kafka by the running below command:
+You can run the same command above to create multiple topics. After that, you can run the following command to see the created topics on Kafka. The replication factor specifies how many copies of data will be created. Since we are running with a single instance, keep this value 1. Set the partition options as the number of brokers you want your data to be split between.
 
 ```
 devops@LAPTOP-JF1PIDLR:/usr/local/kafka$ bin/kafka-topics.sh --list --bootstrap-server localhost:9092
@@ -360,7 +352,7 @@ devops@LAPTOP-JF1PIDLR:/usr/local/kafka$ bin/kafka-topics.sh --list --bootstrap-
 emqx-to-kafka
 ```
 
-Furthermore, you can run describe command to see details such as the partition count of the new topic:
+Moreover, you can use the describe command to view information like the new topic's partition count:
 
 ```
 devops@LAPTOP-JF1PIDLR:/usr/local/kafka$ bin/kafka-topics.sh --describe --topic emqx-to-kafka --bootstrap-server localhost:9092
@@ -370,19 +362,17 @@ Topic: emqx-to-kafka    TopicId: BPDpQiOvQ2WDGWPn45d99w PartitionCount: 1       
 
 ### Step 4: Writing event into Kafka topic
 
-A Kafka client communicates with the Kafka brokers via the network for writing (or reading) events. Once received, the brokers will store the events in a durable and fault-tolerant manner for as long as you need—even forever.
-
-Run the console producer client to write a few events into your topic. By default, each line you enter will result in a separate event being written to the topic.
+Run the producer client to write a few events into your topic. By default, each line you enter will result in a separate event being written to the topic. A Kafka client communicates with the Kafka brokers via the network for writing (or reading) events. Once the brokers receive the events, they will store them for as long as you need—even forever.
 
 ```
 bin/kafka-console-producer.sh --topic emqx-to-kafka --bootstrap-server localhost:9092
 >
 ```
 
-> **_NOTE:_** Here `>` means, it entered into a prompt and asking you to enter messages. Those messages will be sent to Kafka broker and into the specified topic.
+> **_NOTE:_** In this case, `>` indicates that it entered a prompt and requested that you add messages, which will be transmitted to the designated topic and the Kafka broker.
 
 
-Example output,
+Example instance,
 ```
 devops@LAPTOP-JF1PIDLR:/usr/local/kafka$ bin/kafka-console-producer.sh --topic emqx-to-kafka --bootstrap-server localhost:9092
 >
@@ -391,10 +381,10 @@ devops@LAPTOP-JF1PIDLR:/usr/local/kafka$ bin/kafka-console-producer.sh --topic e
 >
 ```
 
-You can stop the producer client with Ctrl-C at any time.
+Ctrl-C can be used to end the producer client at any moment.
 
 ### Step 5: Reading the eventn from Kafka topic
-Open another terminal session and run the console consumer client to read the events you just created:
+To read the events you just created, open a second terminal session and launch the consumer client:
 
 ```
 devops@LAPTOP-JF1PIDLR:/usr/local/kafka$ bin/kafka-console-consumer.sh --topic emqx-to-kafka --from-beginning --bootstrap-server localhost:9092
@@ -403,26 +393,22 @@ First kafka producer message
 Second Kafka producer message
 ```
 
-As soon as you hit the consumer command, it started reading the buffered messages.
+The consumer client can be stopped at any moment by using Ctrl-C. It began reading the buffered messages as soon as you hit the consumer command.
 
-You can stop the consumer client with Ctrl-C at any time.
+Feel free to get hands-on: for instance, write more events by switching back to your producer terminal (previous step), and observe how the events appear instantly in your consumer terminal. Events in Kafka are durably stored, so you can read them as many times as you would like by opening another terminal session and repeating the previous command.
 
-Feel free to have hands-on: for example, switch back to your producer terminal (previous step) to write additional events, and see how the events immediately show up in your consumer terminal.
-
-Because events are durably stored in Kafka, they can be read as many times and by as many consumers as you want. You can easily verify this by opening yet another terminal session and re-running the previous command again.
-
-> **_NOTE:_** In a time sensitive applications, its very curial step to maintain consistency with data and avoiding redundent records. There is an option in the kakfa to specify the position to read the messages from.
+> **_NOTE:_** An option in the kakfa to select the location to read the messages from makes it very important to ensure consistency with data and avoid redundant records in time-sensitive applications.
 >    ```
 >    --offset earlier/latest
 >    ```
 
->    If you don't specify this flag, by default would be latest. This mean, it will read only the messages with latest offset value. The other option is earliest, means kafka reads the messages from the offset where it reads last time.
+>    The default value for this flag is latest, which implies that Kafka will read only messages with the most recent offset value if you do not specify it. The alternative is earliest, which indicates that Kafka will read messages from the offset where it read the most recent message.
 
->    For example, If we assume 0 1 2 3 4 5 are the producer messages and assume kafka red and processed 0 1 2. Later due to some glitch, kafka service was restarted. In case of "latest", its will wait for new messages to come. so it will skip 3 4 5 messages. where as in case of "earliest", it will start reading from 3 4 5 and then latest.
+>    For instance, if we assume 0 1 2 and 3 4 5 are the producer messages and assume kafka red and processed 0 1 2. Later, due to some glitch, kafka service was restarted. In case of "latest," it will wait for new messages to come in and skip 3 4 5 messages; in case of "earliest," it will start reading from 3 4 5 and then latest
 
->    when the application expecting the real time data and if earlier option being used, then there is a possibility that the application might receive old entries incase any lag in the kafka.
+>    In the event that there is a lag in the kafka, the application may receive outdated entries if it is expecting real-time data and is using the earlier option.
 
-So far, we have seen how to setup kafka and processing message via command line interface. Now its to send and received kafka messages via python programing language.
+Thus far, we have examined how to set up Kafka and handle messages using the CLI. The next step involves sending and receiving Kafka messages using the Python programming language.
 
 ### Step 6: Kafka producer python module
 
@@ -487,10 +473,7 @@ while True:
 
 ## EMQX + KAFKA together
 
-So far, we have learned how EMQX and Kafka works individually. Now its time to club together to yeild better results.
-All we need to do here is, merging EMQX subscriber logic and Kafka producer logic together.
-
-After merging both the logics, it will look like below,
+After learning how EMQX and Kafka function separately up till now, it is time to combine the two to achieve better outcomes. To do this, simply combine the logics of EMQX subscribers and Kafka producers. The combined output will look like this:
 
 ```
 import random
@@ -556,7 +539,7 @@ if __name__ == "__main__":
     run()
 ```
 
-The main fundamental change in the existing EMQX subscriber logic would be, along with printing the message in subcribe function, now we are sending that messsage into kafka producer like below.
+The primary and most significant modification to the current EMQX subscriber logic is that, in addition to printing the message in the subscribe function, we are now sending it to the Kafka producer as seen below.
 
 ```
 def subscribe(client: mqtt_client):
@@ -567,13 +550,13 @@ def subscribe(client: mqtt_client):
         producer.flush()
 ```
 
-The end result would be when emqx publisher send a message, kafka consumer will receive it.
+In the end, kafka consumer will receive a message sent by emqx publisher.
 
 ![emqx and kafka merge](images/kafka/emqx-kafka-together.png)
 
-So, in a real time scenario, the emqx publisher logic will go into IOT devices where those devices periodically send some messages by capturing real time data and kafka consumer will process that data at the end and finally we can process and store the data in backend database.
+Therefore, in a real-time situation, the emqx publisher logic will be implemented in IOT devices, which will regularly transmit messages and record real-time data. The data will then be processed by kafka consumers, and we will be able to store and process the data in a backend database.
 
-In the next section, we will explore storing the messages from kafka consumer into mango db.
+We will look at storing the messages from the Kafka consumer into the Mango database in the following section.
 
 ## Processing and storing real time data into mongodb
 
