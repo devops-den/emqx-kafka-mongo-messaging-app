@@ -560,12 +560,9 @@ We will look at storing the messages from the Kafka consumer into the Mango data
 
 ## Processing and storing real time data into mongodb
 
-In this section, we are going to create a python function using pymongo, a python library to interact with mongo db.
-we can create a free account @ https://www.mongodb.com/. By default, we can create a free standard project in mongodb cloud console without paying anything. though there are some restrictions but for a beginer its obsolutely fine to get start.
+We can create a free account at https://www.mongodb.com/. By default, we can create a free standard project in the mongodb cloud console without paying anything; there are some restrictions, but for a beginner, it is absolutely fine to get started. I will not go into detail on how to create a cluster, project, database, or collection in mongodb in this tutorial, but I will create a separate document for it in the future. In this section, we will create a Python function using pymongo, a Python library that interacts with Mongo Db.
 
-I am not going to explain how to create cluster/project/database/collection in mongodb in this turotial but i will create a separate document for it in future.
-
-1) Below is my mongo handler which will connect to database and store the messages into "incoming" collection.
+1) This mongo handler, which connects to the database and stores the messages in the "incoming" collection, is what you see below.
 
 ```
 from pymongo import MongoClient
@@ -633,13 +630,13 @@ while True:
         MongoInsertHandler(document)
 ```
 
-In the existing kafka consumer logic, I have appended the below lines in a while loop.
+I have added the lines below to the current Kafka consumer logic inside of a while loop.
 
 ```
 document = {"topic": message.topic, "partition": message.partition, "offset": message.offset, "value": message.value}
 MongoInsertHandler(document)
 ```
 ![Inserting document](images/mongo/mongo-insert.png)
-As you can see on screen 3, document is getting inserted up on receiving in kafka consumer. In the next image, you can also find the records inserted in the collection in the mongodb cloud console.
+Screen 3 shows how the document is being inserted into the Kafka consumer upon receipt. The records that have been inserted into the collection in the MongoDB Cloud Console are also visible in the next image.
 ![mongo console](images/mongo/mongo-console.png)
 <h3 style="text-align: center;"> *** End of Tutorial *** </h3>
