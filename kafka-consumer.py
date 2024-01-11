@@ -1,5 +1,6 @@
 import json
 from kafka import KafkaConsumer
+from mongo_handler import MongoInsertHandler
 
 # To consume latest messages and auto-commit offsets
 # consume json messages
@@ -20,3 +21,5 @@ while True:
         # e.g., for unicode: `message.value.decode('utf-8')`
         print ("%s:%d:%d: data=%s" % (message.topic, message.partition,
                                             message.offset, message.value))
+        document = {"topic": message.topic, "partition": message.partition, "offset": message.offset, "value": message.value}
+        MongoInsertHandler(document)

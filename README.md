@@ -560,3 +560,86 @@ We will look at storing the messages from the Kafka consumer into the Mango data
 
 ## Processing and storing real time data into mongodb
 
+In this section, we are going to create a python function using pymongo, a python library to interact with mongo db.
+we can create a free account @ https://www.mongodb.com/. By default, we can create a free standard project in mongodb cloud console without paying anything. though there are some restrictions but for a beginer its obsolutely fine to get start.
+
+I am not going to explain how to create cluster/project/database/collection in mongodb in this turotial but i will create a separate document for it in future.
+
+1) Below is my mongo handler which will connect to database and store the messages into "incoming" collection.
+
+```
+from pymongo import MongoClient
+
+def MongoInsertHandler(doc):
+    uri             = "mongodb+srv://<username>:<password>@<mongo-endpoint>/?retryWrites=true&w=majority"
+    collection_name = "incoming"
+
+    try:
+        client = MongoClient(uri)
+    # return a friendly error if a URI error is thrown 
+    except Exception as e:
+        print(e)
+
+    # use a database
+    db = client["emqx-kafka-mongo-app"]
+
+    # use a collection
+    my_collection = db[collection_name]
+
+    # INSERT DOCUMENTS
+    #
+    # In this example, You can insert individual documents using collection.insert_one().
+    # If you are creating multiple documents then we can insert them all with insert_many().
+    try:
+        print("Inserting document: {}".format(doc))
+        result = my_collection.insert_one(doc)
+        print("Document inserted!")
+    # return a friendly error if the operation fails
+    except Exception as e:
+        print(e)
+
+# if __name__ == "__main__":
+#     document = {"hello": "HI"}
+#     MongoInsertHandler(document)
+```
+
+2) As a next step, I will integrate this mongo handler into kafka consumer. When kafka consumer receives message from kafka producer, it will insert that message into mongodb. before calling the mongo handler, I am formatting the data into a json format.
+
+```
+import json
+from kafka import KafkaConsumer
+from mongo_handler import MongoInsertHandler
+
+# To consume latest messages and auto-commit offsets
+# consume json messages
+# StopIteration if no message after 1sec
+# auto_offset_reset='earliest', enable_auto_commit=False
+consumer = KafkaConsumer(bootstrap_servers='localhost:9092',
+                         auto_offset_reset='latest', 
+                         enable_auto_commit=True,
+                         consumer_timeout_ms=1000,
+                         value_deserializer=lambda m: json.loads(m.decode('ascii')))
+
+# Subscribe to a regex topic pattern
+consumer.subscribe(pattern='^emqx.*')
+
+while True:
+    for message in consumer:
+        # message value and key are raw bytes -- decode if necessary!
+        # e.g., for unicode: `message.value.decode('utf-8')`
+        print ("%s:%d:%d: data=%s" % (message.topic, message.partition,
+                                            message.offset, message.value))
+        document = {"topic": message.topic, "partition": message.partition, "offset": message.offset, "value": message.value}
+        MongoInsertHandler(document)
+```
+
+In the existing kafka consumer logic, I have appended the below lines in a while loop.
+
+```
+document = {"topic": message.topic, "partition": message.partition, "offset": message.offset, "value": message.value}
+MongoInsertHandler(document)
+```
+![Inserting document](images/mongo/mongo-insert.png)
+As you can see on screen 3, document is getting inserted up on receiving in kafka consumer. In the next image, you can also find the records inserted in the collection in the mongodb cloud console.
+![mongo console](images/mongo/mongo-console.png)
+<h3 style="text-align: center;"> *** End of Tutorial *** </h3>
