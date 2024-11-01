@@ -1,4 +1,4 @@
-# EMQX KAFKA AND MONGO MESSAGE PROCESSING APPLICATION
+# KAFKA
 The goal of this document is to use Kafka to process massive amounts of data from Internet of Things (IOT) devices in an efficient manner. However, since Kafka was not intended for IOT devices, the integration of EMQX—which uses the MQTT lightweight protocol—with Kafka can elevate a variety of opportunities to process the data in real-time, greatly benefiting time-sensitive applications.
 
 ## Introduction
