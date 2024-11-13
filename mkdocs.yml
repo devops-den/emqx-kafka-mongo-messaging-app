@@ -1,3 +1,13 @@
 site_name: DevopsDen
 theme:
   name: material
+  features:
+    - navigation.indexes
+
+nav:
+  - Home: index.md
+  - Install: install.md
+  - Usage: usage.md
+  - Blog:
+      - blog/index.md
+      Tags: blog/tags.md
