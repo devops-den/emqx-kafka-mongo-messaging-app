@@ -3,10 +3,10 @@ theme:
   name: material
   features:
     - navigation.indexes
+plugins:
+  - blog
 
 nav:
-  - Home: index.md
-  - Install: install.md
-  - Usage: usage.md
+  - index.md
   - Blog:
       - blog/index.md
