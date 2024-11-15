@@ -1,2 +1,0 @@
-# AKS
-Welcome to AKS!

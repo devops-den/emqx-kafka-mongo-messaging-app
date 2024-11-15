@@ -1,6 +1,10 @@
-# EMQX-KAFKA App
+---
+date:
+  created: 2023-11-13
+---
+# Emqx and Kafka app
 The goal of this document is to use Kafka to process massive amounts of data from Internet of Things (IOT) devices in an efficient manner. However, since Kafka was not intended for IOT devices, the integration of EMQX—which uses the MQTT lightweight protocol—with Kafka can elevate a variety of opportunities to process the data in real-time, greatly benefiting time-sensitive applications.
-
+<!-- more -->
 ## Introduction
 ### EMQX
 EMQX is an open-source, highly scalable, and feature-rich MQTT broker designed for IoT and real-time messaging applications. It supports up to 100 million concurrent IoT device connections per cluster while maintaining a throughput of 1 million messages per second and a millisecond latency.
