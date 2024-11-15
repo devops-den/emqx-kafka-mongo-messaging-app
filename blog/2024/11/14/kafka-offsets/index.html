@@ -1,0 +1,702 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Discuss about devops activities">
+      
+      
+      
+        <link rel="canonical" href="https://github.com/devops-den/blog/2024/11/14/kafka-offsets/">
+      
+      
+        <link rel="prev" href="../../../../2023/11/13/emqx-and-kafka-app/">
+      
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
+    
+    
+      
+        <title>Kafka Offsets - DevopsDen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.0253249f.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kafka-offsets" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="DevopsDen" class="md-header__button md-logo" aria-label="DevopsDen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DevopsDen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Kafka Offsets
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="DevopsDen" class="md-nav__button md-logo" aria-label="DevopsDen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    DevopsDen
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_2" id="__nav_1_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2023/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2023
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-kafka-offsets-explained" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Kafka Offsets Explained
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-why-kafka-offsets-are-important" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Why Kafka Offsets Are Important
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-real-time-examples-of-kafka-offset-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Real-Time Examples of Kafka Offset Management
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-real-time-example-replay-and-rewind-using-offsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Real-Time Example: Replay and Rewind Using Offsets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-implementing-offset-tracking-with-a-real-time-python-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Implementing Offset Tracking with a Real-Time Python Example
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Implementing Offset Tracking with a Real-Time Python Example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2024-11-14 00:00:00" class="md-ellipsis">Thursday, November 14, 2024</time>
+                      </div>
+                    </li>
+                    
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              4 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+
+
+<h1 id="kafka-offsets">Kafka Offsets</h1>
+<p>Kafka offsets are critical to understanding and managing messages consumption in Apache Kafka. An Offset is a unique identifier for each message in a kafka partition, and it tells a consumer where to continue reading if it stops and restarts.</p>
+<p>Let's dive into Kafka offsets with real-time examples to clarify their purpose and importance.</p>
+<!-- more -->
+<hr />
+<h3 id="1-kafka-offsets-explained">1. Kafka Offsets Explained</h3>
+<p>In Kafka, each topic is split into <b>Partitions</b>. Each partition is an ordered sequence of messages, and each message in a partition has a unique identifier called an <b>offset</b>.</p>
+<ul>
+<li>
+<p><b>Offset</b>: An integer value assigned to messages in a partition, identifying their position. The first message in a partition might have an offset of 0, the next one 1, and so on.</p>
+</li>
+<li>
+<p><b>Consumer Offset</b>: This is the offset that a consumer reads from in a partition. Kafka allows consumers to commit offsets, so they can resume reading from where they left off, even after a restart.</p>
+</li>
+</ul>
+<hr />
+<h3 id="2-why-kafka-offsets-are-important">2. Why Kafka Offsets Are Important</h3>
+<p>Offsets are essential for <b>tracking and replaying messages</b>. Here's why:</p>
+<ul>
+<li>
+<p><b>Restarting Consumers</b>: If a consumer crashes, it can resume from the last committed offset, avoiding message duplication or message loss.</p>
+</li>
+<li>
+<p><b>Replaying Messages</b>: You can rewind to a specific offset to replay messages for specific offset to replay messages for analytics or troubleshooting purposes.</p>
+</li>
+<li>
+<p><b>Tracking Progress</b>: Offsets help track which messages have been processed, allowing for fault tolarence.</p>
+</li>
+</ul>
+<hr />
+<h3 id="3-real-time-examples-of-kafka-offset-management">3. Real-Time Examples of Kafka Offset Management</h3>
+<p><b>Example 1: Basic Offset Tracking in a Consumer Group</b></p>
+<p>Imagine you have a kafka topic with a single partition, and a consumer group with two consumers, Consumer-A and Consumer-B, is reading messages. Here's how offsets work in this scenario:</p>
+<ol>
+<li>
+<p><b>Message Arrival</b>: Messages m0, m1, and m2 are produced to the partition with offsets 0, 1, and 2, respectively.</p>
+</li>
+<li>
+<p><b>Consumer Read</b>: Consumer-A reads m0 and commits the offset 0. Then it reads m1 and commits offset 1.</p>
+</li>
+<li>
+<p><b>Failure and Recovery</b>: If Consumer-A crashes after reading m1, it can resume at offset 2 (last commit offset) upon restart. This avoids reprocessing m1 or missing m2.</p>
+</li>
+</ol>
+<p>This setup helps ensure no message duplication or loss.
+<img alt="kafka offset" src="../../../../images/kafka/Kafka_Offset.gif" /></p>
+<p><b>Example 2: Tracking and Committing Offsets Manually</b></p>
+<p>Considering a situation where you're processing critical messages, and you want precise control over when offsets are committed. In thic case, you might manually commit offsets after each message processing, rather than automatically.</p>
+<ol>
+<li>
+<p><b>Start Reading</b>: Consumer-B reads a message with offset 0 but doesn't immediately commit it.</p>
+</li>
+<li>
+<p><b>Processing</b>: It takes some time to process this message. If the consumer crashes before commiting the offset, it will resume at 0, re-reading the message upon restart.</p>
+</li>
+<li>
+<p><b>Commit After Processing</b>: After processing, Consumer-B commits offset 0, ensuring progress is saved only after successful processing.</p>
+</li>
+</ol>
+<p>Manualy commits give more control and can be essential in use cases where processing integrity is critical.</p>
+<hr />
+<h3 id="4-real-time-example-replay-and-rewind-using-offsets">4. Real-Time Example: Replay and Rewind Using Offsets</h3>
+<p>kafka's offset system allows you to replay of rewind messages. Suppose you have a kafka topic with customer purchase events, and you want to analyze event from a sepcific time.</p>
+<ol>
+<li>
+<p><b>Set Offset Manually</b>: You can configure a consumer to start at specific offset (e.g offset 100) instead of latest message. This allows the consumer to replay messages starting from that point.</p>
+</li>
+<li>
+<p><b>Rewind</b>: If an error occurs in the data processing logic, you can rewind to an earlier offset and reprocess the messages, correcting any issues with out reading to republish events.</p>
+</li>
+</ol>
+<p>This replay and rewind capability make Kafka a great choice for event-driven applications, where historical data needs to be processed.</p>
+<h3 id="5-implementing-offset-tracking-with-a-real-time-python-example">5. Implementing Offset Tracking with a Real-Time Python Example</h3>
+<p>Here's python script that demonstrates real-time Kafka offset tracking using the kafka-python library. This script consumes messages from a kafka topic and logs the offset of each message, allowing you to track progress and replay messages if needed.</p>
+<p><b>Python Code for Real-Time Offset Tracking</b></p>
+<pre><code>from kafka import kafkaConsumer
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format=&quot;%(asctime)s - %(message)s&quot;)
+
+def consume_messages(broker, topic):
+  consumer = kafkaConsumer(
+    topic,
+    bootstrap_servers=[broker],
+    group_id=&quot;example_group&quot;,
+    auto_offset_reset=&quot;earliest&quot;, # Start from the beginning if no commited offset
+    enable_auto_commit=False      # Manual offset handling
+  )
+
+  try:
+    for message in consumer:
+      # Display the message and its offset
+      print(f&quot;Message: {message.value.decode('utf-8')}&quot;)
+      print(f&quot;Partition: {message.Partition}, Offset: {message.offset}&quot;)
+
+      # Log offset info for demonstration purpose only
+      logging.info(f&quot;Processes message at offset {message.offset} in partition {message.partition}&quot;)
+
+      # Commit offset after processing each message
+      consumer.commit()
+  except KeyboardInterrupt:
+    print(&quot;Stopped Consuming!&quot;)
+  finally:
+    consumer.close()
+
+# Configure and run the consumer
+broker = &quot;localhost:9092&quot;
+topic  = &quot;your_topic_name&quot;
+consume_messages(broker, topic)
+</code></pre>
+<p><b>Explanation of the Code</b></p>
+<ul>
+<li>
+<p><b>Kafka Consumer Setup</b>: Connects to a Kafka broker and reads from a specified topic.</p>
+</li>
+<li>
+<p><b>Manual Offset Commit</b>: Offsets are committed manually using <code>consumer.commit()</code> to ensure each offset is recorded only after successful messsage processing.</p>
+</li>
+<li>
+<p><b>Logging</b>: Each message and its offset are printed and logged, allowing you to track real-time processing.</p>
+</li>
+</ul>
+<p>You can run this script and see the offset in real time. Restarting the consumer should resume reading from the last committed offset, demonstrating the importance of offsets for fault-tolerant processing.</p>
+<hr />
+<h4 id="conclusion">Conclusion</h4>
+<p>Kafka offsets are foundational to reliable message consumption and processing. They enable consumers to:</p>
+<ul>
+<li>
+<p>Track progress</p>
+</li>
+<li>
+<p>Rewind and replay messages</p>
+</li>
+<li>
+<p>Manage message processing with fault tolerance</p>
+</li>
+</ul>
+<p>Understanding offsets and managing them properly can enhance Kafka applications' robustness, making them more resilient and reliable in production.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.indexes"], "search": "../../../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>
